@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .channel-box {
+            width: 200px;
+            height: 100px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .channel-box:hover {
+            transform: scale(1.05);
+        }
+        .channel-box img {
+            max-width: 50px;
+            margin-right: 10px;
+        }
+        .channel-box span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #player-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="channel-box" onclick="playStream('rtmp://example.com/stream/mahaa_news', 'MAHAA News')">
+            <img src="mahaa_news_logo.png" alt="MAHAA News Logo">
+            <span>MAHAA News</span>
+        </div>
+        <div class="channel-box" onclick="playStream('rtmp://example.com/stream/mahaa_max', 'MAHAA MAX')">
+            <img src="mahaa_max_logo.png" alt="MAHAA MAX Logo">
+            <span>MAHAA MAX</span>
+        </div>
+        <div class="channel-box" onclick="playStream('rtmp://example.com/stream/mahaa_bhakti', 'MAHAA BHAKTI')">
+            <img src="mahaa_bhakti_logo.png" alt="MAHAA BHAKTI Logo">
+            <span>MAHAA BHAKTI</span>
+        </div>
+        <div id="player-container"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        function playStream(rtmpUrl, channelName) {
+            const playerContainer = document.getElementById('player-container');
+            playerContainer.innerHTML = `
+                <div>
+                    <h3>Now Playing: ${channelName}</h3>
+                    <video id="video-player" controls autoplay width="640" height="360"></video>
+                </div>
+            `;
+
+            const video = document.getElementById('video-player');
+            // Note: RTMP requires a compatible player like Video.js with a Flash fallback or a server-side conversion to HLS.
+            // For simplicity, assuming an HLS fallback or proxy is available.
+            const hlsUrl = rtmpUrl.replace('rtmp://', 'https://') + '/playlist.m3u8'; // Placeholder conversion
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(hlsUrl);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = hlsUrl;
+            } else {
+                playerContainer.innerHTML = '<p>Sorry, your browser does not support this stream.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
